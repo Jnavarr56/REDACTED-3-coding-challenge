@@ -2,6 +2,7 @@ require_relative 'lib/coding_challenge/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "coding_challenge"
+  spec.license       = "MIT"
   spec.version       = CodingChallenge::VERSION
   spec.authors       = ["Jorge Navarro"]
   spec.email         = ["jnavarr56@gmail.com"]
@@ -25,4 +26,9 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
+
+
+  # Here's the stuff that does the pretty color magic!
+  spec.add_runtime_dependency 'figlet', '~> 1.1'
+  spec.add_runtime_dependency 'lolcat', '~> 100.0', '>= 100.0.1'
 end
