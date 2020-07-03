@@ -4,11 +4,11 @@ class Query
   attr_reader :product_type, :options, :results
   attr_writer :performed_at, :results
 
-  def initialize(query_args, results = nil)
+  def initialize(query_args)
     @product_type = query_args[0]
-    @options = query_args.slice(1, query_args.length - 1)
+    @options = query_args.slice(1, query_args.length)
     @performed_at = nil
-    @results = results
+    @results = nil
   end
 
   def formatted_results

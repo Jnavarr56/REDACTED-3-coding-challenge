@@ -25,8 +25,27 @@ module CodingChallenge
       end
 
       def execute(input: $stdin, output: $stdout)
-        perform_intro_animation
-        loading_animation('Loading menu...', 0.5)
+        cli_args = ARGV.slice(1, ARGV.length)
+
+        perform_intro_animation if @options['skip_animation'].nil?
+
+        if cli_args.empty?
+          loading_animation('Loading menu...', 1)
+        else
+          loading_animation('Calculating results...', 2)
+
+          new_inventory = Inventory.new
+          new_inventory.load_products_list_from_default
+          @inventory = new_inventory
+
+          new_query = Query.new(cli_args)
+          query_with_results = @inventory.handle_query(new_query)
+
+          puts 'Results:'.colorize(:yellow)
+          puts query_with_results.results
+
+          @queries.push(query_with_results.formatted_results)
+        end
 
         exited = false
         until exited
@@ -185,8 +204,8 @@ module CodingChallenge
         new_query = Query.new(args)
         query_with_results = @inventory.handle_query(new_query)
         loading_animation('Calculating...', 2)
+        puts 'Results:'.colorize(:yellow)
         puts query_with_results.results
-
         @queries.push(query_with_results.formatted_results)
 
         0

@@ -2,6 +2,7 @@
 
 require 'net/http'
 require 'json'
+require 'date'
 
 class Inventory
   @@DEFAULT_PRODUCTS_LIST_URL = 'https://gist.githubusercontent.com/michaelporter/b2743e0cdad0664fa9517c0a6b82cdda/raw/67e4606007391f678c9330ee3a77a9024fce4e64/products.json'

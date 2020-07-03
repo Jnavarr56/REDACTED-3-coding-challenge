@@ -16,11 +16,13 @@ module CodingChallenge
       require_relative 'version'
       puts "v#{CodingChallenge::VERSION}"
     end
-    map %w(--version -v) => :version
+    map %w[--version -v] => :version
 
-    desc 'start', 'Command description...'
+    desc 'start', 'Runs the app!'
     method_option :help, aliases: '-h', type: :boolean,
                          desc: 'Display usage information'
+    method_option :skip_intro_animation, type: :boolean,
+                                         desc: 'Skips intro animation'
     def start(*)
       if options[:help]
         invoke :help, ['start']
