@@ -25,9 +25,9 @@ module CodingChallenge
       end
 
       def execute(input: $stdin, output: $stdout)
-        cli_args = ARGV.slice(1, ARGV.length)
+        cli_args = ARGV.slice(1, ARGV.length).reject { |arg| arg.slice(0, 2) == '--' }
 
-        perform_intro_animation if @options['skip_animation'].nil?
+        perform_intro_animation if @options['skip_intro_animation'].nil?
 
         if cli_args.empty?
           loading_animation('Loading menu...', 1)
