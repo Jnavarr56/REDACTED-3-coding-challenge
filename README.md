@@ -1,6 +1,11 @@
 # CodingChallenge
 
-Had fun with this. Published it as gem.
+Had fun with this. I published it as gem here: https://rubygems.org/gems/coding_challenge.
+
+## Quickstart
+
+`gem install coding_challenge`
+`coding_challenge start`
 
 ## Installation
 
