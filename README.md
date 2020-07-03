@@ -4,7 +4,7 @@ Had fun with this. I published it as gem here: https://rubygems.org/gems/coding_
 
 ## Quickstart
 
-`gem install coding_challenge`
+`gem install coding_challenge` then
 `coding_challenge start`
 
 ## Screenshots
@@ -22,7 +22,7 @@ Clone repo. Then in project directory `bundle install`.
 
 2. via rubygems
 
-``gem install coding_challenge```
+`gem install coding_challenge`
 
 ## Usage
 
