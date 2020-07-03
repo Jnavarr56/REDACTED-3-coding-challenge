@@ -7,6 +7,13 @@ Had fun with this. I published it as gem here: https://rubygems.org/gems/coding_
 `gem install coding_challenge`
 `coding_challenge start`
 
+## Screenshots
+
+1. using CLI menu to input arguements
+   ![gif1](./gif1.gif)
+2. inputting arguments directly from commandline
+   ![gif2](./gif2.gif)
+
 ## Installation
 
 1. via cloning
