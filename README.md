@@ -32,8 +32,9 @@ To run with a cool CLI UI at the start, either do:
 - (IF INSTALLED AS GEM) from CLI do: `coding_challenge start [product type] [options]`
 
 To run without a cool CLI UI at the start but have it appear after, either do:
-_ (IF CLONED) Go to project directory and: `./exe/coding_challenge start [product type] [options] --skip_intro_animation=true`
-_ (IF INSTALLED AS GEM) from CLI do: `coding_challenge start [product type] [options] --skip_intro_animation=true`
+
+- (IF CLONED) Go to project directory and: `./exe/coding_challenge start [product type] [options] --skip_intro_animation=true`
+- (IF INSTALLED AS GEM) from CLI do: `coding_challenge start [product type] [options] --skip_intro_animation=true`
 
 ## Testing
 
