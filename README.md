@@ -40,40 +40,96 @@ To run without a cool CLI UI at the start but have it appear after, either do:
 
 Clone and go to project directory and do `rspec spec`
 
-## Code Highlight
+## Code Explanation
 
-I use an object to group together the query args and results like so
+Since the product list is represented as an array, there is NO
+way to solve this problem in O(1) time.
+
+At the very least, any solution is going to require 1 full iteration through the product list.
+What we can do, is create a hash based schema that will group all of the product types, option types,
+and option values as keys in a logical hierachy so that afterwards, detecting the prescence of data can be done
+simply by attempting to access it from the hash as a key O(1) time.
+
+I tried to do this compactly/elegantly by creating the following method and having it execute
+immediately after reading the products list:
 
 ```
-class Query
-  attr_reader :product_type, :options, :results
-  attr_writer :performed_at, :results
-
-  def initialize(query_args)
-    @product_type = query_args[0]
-    @options = query_args.slice(1, query_args.length)
-    @performed_at = nil
-    @results = nil
+  def index_product_schema(products_list)
+    products_schema = {}
+    products_list.each do |p|
+      if !products_schema.key?(p['product_type'])
+        products_schema[p['product_type']] = p['options'].transform_values { |o| Hash[o, true] }
+      else
+        products_schema[p['product_type']].merge!(p['options']) { |_, o, n| o.merge(Hash[n, true]) }
+      end
+    end
+    products_schema
   end
-
-  def formatted_results
-    results_str = "Performed At #{@performed_at}\n"
-    results_str +=  "   Product Type Arg: #{@product_type}\n"
-    results_str +=  "   Options Args: #{@options.join(', ')}\n"
-    results_str +=  "   Results:\n"
-    results_str +=  "      #{@results.join("\n      ")}"
-
-    results_str
-  end
-end
 ```
 
-This an instance of this class is then passed to an instance of a class I made in lib/coding_challenge/commands/util/Inventory.rb as an arg to this method
+The above operation going to require one loop through the product list and then for each item,
+a nested loop that runs for the number of option types that exist for that item.
+
+The generated products schema would look like this:
+
+`{"tshirt"=>{"gender"=>{"male"=>true, "female"=>true}, "color"=>{"red"=>true, "green"=>true, "navy"=>true, "white"=>true, "black"=>true}, "size"=>{"small"=>true, "medium"=>true, "large"=>true, "extra-large"=>true, "2x-large"=>true}}, "mug"=>{"type"=>{"coffee-mug"=>true, "travel-mug"=>true}}, "sticker"=>{"size"=>{"x-small"=>true, "small"=>true, "medium"=>true, "large"=>true, "x-large"=>true}, "style"=>{"matte"=>true, "glossy"=>true}}}`
+
+Run Time ~> sum of O(num_option_types<sub>i<sub>) where i goes from 1 to the length of the products_list array
+
+Next, the following method below will execute using the product_schema produced by `index_product_schema`.
+
+You can see that validating the precesence of/accessing the options schema for a particular
+product type is done in O(1) in the first line.
+
+In an option schema for a given product type, the keys are option types and the values are hashes that contain keys
+every possible option value for a given option type. ex for sticker:
+`{"size"=>{"x-small"=>true, "small"=>true, "medium"=>true, "large"=>true, "x-large"=>true}, "style"=>{"matte"=>true, "glossy"=>true}}`
+We can now iterate through all of the option types/option values pairs using an index value (arg_position) to keep
+track of our position in the hash.
+
+Validating an options argument against possible option values is done using the index to match up
+the CLI argument at the position of the index to the current option types/option values pair. We do this in O(1)
+time by seeing if the argument exists as a key in the option values pair.
+
+The current option values hash is transformed into a friendly string by joining the keys
+together with commas.
+
+The main loop will execute for the number of option types for a given product type regardless of the
+size of the cli arguments input, which is a respective constant for each product type, so it is there for O(1).
 
 ```
   def handle_query(query)
-    remaining_props_seen = {}
-    remaining_props = []
+    product_options_schema = @products_schema[query.product_type.downcase]
+    is_invalid_product_type = product_options_schema.nil?
+    raise InvalidProductTypeError, query.product_type if is_invalid_product_type
+
+    results = []
+    product_options_schema.each_with_index do |(option_type, option_values_map), arg_position|
+      option_argument = query.options[arg_position]
+      is_argument_provided = !option_argument.nil?
+
+      if is_argument_provided
+        is_invalid_argument = !option_values_map.key?(option_argument)
+        raise InvalidOptionError.new(query.product_type, option_type, option_argument) if is_invalid_argument
+      else
+        possible_option_values = option_values_map.keys
+        results << "#{option_type.capitalize}: #{possible_option_values.join(', ')}"
+      end
+    end
+
+    query.results = results
+    query
+  end
+
+
+I created an Inventory class to act as a wrapper around a product list. When we load a product list,
+This an instance of this class is then passed to an instance of a class I made in lib/coding_challenge/commands/util/Inventory.rb as an arg to this method:
+
+```
+
+def handle_query(query)
+remaining_props_seen = {}
+remaining_props = []
 
     @products_list.each do |product|
       next if product['product_type'] != query.product_type
@@ -95,6 +151,7 @@ This an instance of this class is then passed to an instance of a class I made i
         end
       end
     end
+
 ```
 
 This is the main query algorithm.
@@ -103,12 +160,13 @@ A cool thing you can do is specify for the Inventory class to load in a product 
 This method invokes some private methods I created for handling the cases but the logic is captured here:
 
 ```
-  def load_products_list_from_source(source_type, source_uri)
-    if source_type == 'FILE PATH'
-      load_from_file_path(source_uri)
-    elsif source_type == 'URL'
-      load_from_file_url(source_uri)
-    end
+
+def load_products_list_from_source(source_type, source_uri)
+if source_type == 'FILE PATH'
+load_from_file_path(source_uri)
+elsif source_type == 'URL'
+load_from_file_url(source_uri)
+end
 
     unless @products_list.nil?
       @source_type = source_type
@@ -116,7 +174,8 @@ This method invokes some private methods I created for handling the cases but th
     end
 
     @products_list
-  end
+
+end
 
 ```
 
@@ -131,6 +190,8 @@ Everyone interacting in the CodingChallenge project's codebases, issue trackers,
 ## Copyright
 
 Copyright (c) 2020 Jorge Navarro. See [MIT License](LICENSE.txt) for further details.
+
+```
 
 ```
 

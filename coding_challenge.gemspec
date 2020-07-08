@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary       = 'A hiring coding challenge.'
   spec.description   = 'A Ruby CLI app made for hiring coding challenge.'
   spec.homepage      = 'https://github.com/Jnavarr56/REDACTED-3-coding-challenge'
-  spec.required_ruby_version = Gem::Requirement.new('>= 2.3.0')
+  spec.required_ruby_version = Gem::Requirement.new('>= 2.6.0')
 
   # blank for now
   # spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
