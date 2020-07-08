@@ -86,6 +86,7 @@ every possible option value for a given option type.
 ex for sticker:
 
 `{"size"=>{"x-small"=>true, "small"=>true, "medium"=>true, "large"=>true, "x-large"=>true}, "style"=>{"matte"=>true, "glossy"=>true}}`
+
 We can now iterate through all of the option types/option values pairs using an index value (arg_position) to keep
 track of our position in the hash.
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../lib/coding_challenge/commands/util/inventory'
-require_relative '../lib/coding_challenge/commands/util/1uery'
+require_relative '../lib/coding_challenge/commands/util/query'
 
 RSpec.describe CodingChallenge do
   it 'properly loads a product list from a json file at a URL' do
