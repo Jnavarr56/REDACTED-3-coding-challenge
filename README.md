@@ -74,7 +74,7 @@ The generated products schema would look like this:
 
 `{"tshirt"=>{"gender"=>{"male"=>true, "female"=>true}, "color"=>{"red"=>true, "green"=>true, "navy"=>true, "white"=>true, "black"=>true}, "size"=>{"small"=>true, "medium"=>true, "large"=>true, "extra-large"=>true, "2x-large"=>true}}, "mug"=>{"type"=>{"coffee-mug"=>true, "travel-mug"=>true}}, "sticker"=>{"size"=>{"x-small"=>true, "small"=>true, "medium"=>true, "large"=>true, "x-large"=>true}, "style"=>{"matte"=>true, "glossy"=>true}}}`
 
-Run Time ~> sum of O(num_option_types<sub>i<sub>) where i goes from 1 to the length of the products_list array
+Run Time ~> sum of O(num_option_types<sub>i</sub>) where i goes from 1 to the length of the products_list array
 
 Next, the following method below will execute using the product_schema produced by `index_product_schema`.
 
@@ -82,7 +82,9 @@ You can see that validating the precesence of/accessing the options schema for a
 product type is done in O(1) in the first line.
 
 In an option schema for a given product type, the keys are option types and the values are hashes that contain keys
-every possible option value for a given option type. ex for sticker:
+every possible option value for a given option type.
+ex for sticker:
+
 `{"size"=>{"x-small"=>true, "small"=>true, "medium"=>true, "large"=>true, "x-large"=>true}, "style"=>{"matte"=>true, "glossy"=>true}}`
 We can now iterate through all of the option types/option values pairs using an index value (arg_position) to keep
 track of our position in the hash.
@@ -120,7 +122,7 @@ size of the cli arguments input, which is a respective constant for each product
     query.results = results
     query
   end
-
+```
 
 I created an Inventory class to act as a wrapper around a product list. When we load a product list,
 This an instance of this class is then passed to an instance of a class I made in lib/coding_challenge/commands/util/Inventory.rb as an arg to this method:
@@ -190,6 +192,8 @@ Everyone interacting in the CodingChallenge project's codebases, issue trackers,
 ## Copyright
 
 Copyright (c) 2020 Jorge Navarro. See [MIT License](LICENSE.txt) for further details.
+
+```
 
 ```
 
