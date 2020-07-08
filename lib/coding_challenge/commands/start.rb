@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 require_relative '../command'
-require_relative './util/Inventory'
-require_relative './util/Query'
+require_relative './util/inventory'
+require_relative './util/query'
 require_relative './util/animation'
+require_relative './util/invalid_product_type_error'
+require_relative './util/invalid_option_error'
+require_relative './util/file_read_error'
 
 require 'tty-spinner'
 require 'colorize'
@@ -35,16 +38,20 @@ module CodingChallenge
           loading_animation('Calculating results...', 2)
 
           new_inventory = Inventory.new
-          new_inventory.load_products_list_from_default
-          @inventory = new_inventory
 
-          new_query = Query.new(cli_args)
-          query_with_results = @inventory.handle_query(new_query)
+          begin
+            new_inventory.load_products_list_from_default
+            @inventory = new_inventory
+            new_query = Query.new(cli_args)
+            query_with_results = @inventory.handle_query(new_query)
 
-          puts 'Results:'.colorize(:yellow)
-          puts query_with_results.results
+            puts 'Results:'.colorize(:yellow)
+            puts query_with_results.results
 
-          @queries.push(query_with_results.formatted_results)
+            @queries.push(query_with_results.formatted_results)
+          rescue StandardError => e
+            puts "#{e.class.name}: #{e.message}".colorize(:red)
+          end
         end
 
         exited = false
@@ -124,14 +131,11 @@ module CodingChallenge
               loading_animation('Checking file readability...', 2)
               begin
                 new_inventory.load_products_list_from_source('FILE PATH', new_filepath)
-
-                raise StandardError if new_inventory.products_list.nil?
-
                 @inventory = new_inventory
                 prompt.say("\nFile loaded successfully!")
                 done = true
-              rescue StandardError
-                prompt.say('Could not read this file!')
+              rescue StandardError => e
+                puts "#{e.class.name}: #{e.message}".colorize(:red)
               end
             end
           end
@@ -146,15 +150,14 @@ module CodingChallenge
               spinner.auto_spin
               begin
                 new_inventory.load_products_list_from_source('URL', new_file_url)
-                raise StandardError if new_inventory.products_list.nil?
-
                 @inventory = new_inventory
                 prompt.say("\nFile fetched successfully!")
                 done = true
-              rescue StandardError
-                prompt.say('Could not fetch this file!')
+                spinner.stop
+              rescue StandardError => e
+                spinner.stop
+                puts "#{e.class.name}: #{e.message}".colorize(:red)
               end
-              spinner.stop
             end
 
           end
@@ -163,12 +166,10 @@ module CodingChallenge
           spinner.auto_spin
           begin
             new_inventory.load_products_list_from_default
-            raise StandardError if new_inventory.products_list.nil?
-
             @inventory = new_inventory
             prompt.say("\nDefault file fetched successfully!")
-          rescue StandardError
-            prompt.say('Could not fetch the default file!')
+          rescue StandardError => e
+            puts "#{e.class.name}: #{e.message}".colorize(:red)
           end
           spinner.stop
         end
@@ -202,11 +203,15 @@ module CodingChallenge
         puts ''
 
         new_query = Query.new(args)
-        query_with_results = @inventory.handle_query(new_query)
-        loading_animation('Calculating...', 2)
-        puts 'Results:'.colorize(:yellow)
-        puts query_with_results.results
-        @queries.push(query_with_results.formatted_results)
+
+        begin
+          query_with_results = @inventory.handle_query(new_query)
+          puts 'Results:'.colorize(:yellow)
+          puts query_with_results.results
+          @queries.push(query_with_results.formatted_results)
+        rescue StandardError => e
+          puts "#{e.class.name}: #{e.message}".colorize(:red)
+        end
 
         0
       end

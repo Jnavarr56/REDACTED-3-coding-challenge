@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    coding_challenge (0.1.0)
+    coding_challenge (0.1.2)
       colorize (~> 0.8.1)
       lolcat (~> 100.0, >= 100.0.1)
       thor (~> 1.0, >= 1.0.1)
